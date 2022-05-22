@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.util.Log;
@@ -14,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.kitezeng.shopping.Adapter.PageAdapter;
 import com.kitezeng.shopping.BannerIndicator;
+import com.kitezeng.shopping.Callback3;
 import com.kitezeng.shopping.Login;
 import com.kitezeng.shopping.Manager.HomeManager;
 import com.kitezeng.shopping.Model.Page;
@@ -48,11 +51,9 @@ public class FragmentHome extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView pictureRecycleView;
     private BannerIndicator bannerIndicator;
+    private SwipeRefreshLayout swipe_refresh;
     private ImageView member_card;
     private EditText edit_search;
-    private String host = "http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products";
-    private String limit = "?limit=5";
-    private String offset = "&offset=";
 //    private String apiUrl = host + limit + offset;
     private View backTop;
     private ArrayList<Product> productArrayList = new ArrayList<>();
@@ -110,6 +111,7 @@ public class FragmentHome extends Fragment {
         backTop = view.findViewById(R.id.back_top);
         nestedScrollView = view.findViewById(R.id.nested_scrollview);
         member_card = view.findViewById(R.id.member_card);
+        swipe_refresh = view.findViewById(R.id.swipe_refresh);
 
 
         HomeManager.getInstance().homeView(list, getContext(), recyclerView, bannerIndicator);
@@ -165,6 +167,7 @@ public class FragmentHome extends Fragment {
                 }
             }
         });
+        updateDataBySwipe();
         return view;
 
     }
@@ -195,6 +198,42 @@ public class FragmentHome extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(FragmentHome.this.getActivity(), Login.class));
+            }
+        });
+    }
+
+    private void updateDataBySwipe(){
+        swipe_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipe_refresh.setRefreshing(true);
+                pageAdapter.clearUI();
+                    count = 5;
+                    HomeManager.getInstance().syncDataFromRemote1("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", new Callback3() {
+                        @Override
+                        public void success() {
+                            productArrayList = HomeManager.getInstance().getProductArrayList();
+                            productArrayListTotal.addAll(productArrayList);
+                            pageAdapter.refreshUI(productArrayList);
+                            productPage = HomeManager.getInstance().getProductPage();
+                            Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                            swipe_refresh.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void fail(Exception e) {
+                            swipe_refresh.setRefreshing(true);
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getContext(), "請檢查網路連線", Toast.LENGTH_LONG).show();
+                                }
+                            },4000);
+                        }
+                    });
+
+                swipe_refresh.setRefreshing(false);
             }
         });
     }

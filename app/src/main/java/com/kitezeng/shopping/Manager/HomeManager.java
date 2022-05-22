@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kitezeng.shopping.Adapter.BannerAdapter;
 import com.kitezeng.shopping.Adapter.PageAdapter;
 import com.kitezeng.shopping.BannerIndicator;
+import com.kitezeng.shopping.Callback3;
 import com.kitezeng.shopping.Model.Page;
 import com.kitezeng.shopping.Model.Product;
 import com.kitezeng.shopping.R;
@@ -110,6 +111,21 @@ public class HomeManager {
         });
     }
 
+    public void syncDataFromRemote1(String apiUrl, Callback3 callback3){
+        ApiHelper.requestApi(apiUrl, null, new ApiHelper.Callback() {
+            @Override
+            public void success(String rawString) {
+                HomeManager.getInstance().loadDataFromRawData(rawString);
+                callback3.success();
+            }
+
+            @Override
+            public void fail(Exception exception) {
+                callback3.fail(exception);
+            }
+        });
+    }
+
 //    public void postDataFromRemote(String apiUrl,Product product,Runnable doSomething){
 //        ApiHelper.postRequestApi(apiUrl,product, new ApiHelper.Callback2() {
 //            @Override
@@ -181,3 +197,5 @@ public class HomeManager {
     }
 
 }
+
+

@@ -159,6 +159,12 @@ public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         this.productArrayList = products;
         notifyDataSetChanged();
     }
+
+    public void clearUI(){
+        productArrayList.clear();
+        notifyDataSetChanged();
+    }
+
     public void setLoadState(int loadState) {
         this.loadState = loadState;
         notifyDataSetChanged();
