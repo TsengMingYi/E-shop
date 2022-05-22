@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/home"
+        android:title="首頁"
+        android:icon="@drawable/ic_baseline_home_24"
+        />
+
+    <item
+        android:id="@+id/product"
+        android:title="商品分類"
+        android:icon="@drawable/ic_baseline_local_library_24"
+        />
+
+    <item
+        android:id="@+id/favorite"
+        android:title="我的收藏"
+        android:icon="@drawable/ic_baseline_favorite_24"
+        />
+
+    <item
+        android:id="@+id/shopping_cart"
+        android:title="購物車"
+        android:icon="@drawable/ic_baseline_shopping_cart_24"
+        />
+
+    <item
+        android:id="@+id/member"
+        android:title="會員中心"
+        android:icon="@drawable/ic_baseline_card_membership_24"
+        />
+
+</menu>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".Login">
+
+    <TableLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp">
+
+        <TableRow>
+
+            <ImageView
+                android:id="@+id/back_image"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_baseline_navigate_before_24"
+                android:scaleType="centerInside"
+                android:focusableInTouchMode="false" />
+
+            <TextView
+                android:layout_marginRight="30dp"
+                android:layout_width="0dp"
+                android:text="登入會員"
+                android:textSize="15dp"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="8" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TextView
+        android:text= "帳號"
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/edit_member"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/shape"
+        android:hint="台灣手機/會員卡號/自訂帳號"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionDone"
+        android:paddingLeft="10dp"
+        android:textSize="20dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:singleLine="true"/>
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="密碼"
+            android:textSize="15dp"
+            android:textColor="@color/black"
+            android:layout_weight="9"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="忘記密碼"
+            android:textColor="#DDAA00"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/edit_member_password"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/shape"
+        android:hint="密碼"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionDone"
+        android:paddingLeft="10dp"
+        android:textSize="20dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:singleLine="true"/>
+
+
+    <Button
+        android:id="@+id/login_btn"
+        android:text="登入"
+        android:background="@drawable/shape2"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="還不是會員嗎？"
+            android:gravity="right"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="註冊會員"
+            android:layout_weight="2"
+            android:textColor="#DDAA00"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</LinearLayout>

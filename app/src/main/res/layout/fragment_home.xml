@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.FragmentHome">
+
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/back_top"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TableLayout
+                    android:id="@+id/table_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp">
+
+                    <TableRow>
+
+                        <EditText
+                            android:id="@+id/edit_search"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="8"
+                            android:background="@drawable/textview_border"
+                            android:clickable="true"
+                            android:drawableStart="@drawable/ic_baseline_search_24"
+                            android:drawableLeft="@drawable/ic_baseline_search_24"
+                            android:drawablePadding="10dp"
+                            android:focusableInTouchMode="false"
+                            android:hint="搜尋更多商品"
+                            android:imeOptions="actionDone"
+                            android:paddingLeft="10dp"
+                            android:singleLine="true"
+                            android:textSize="10dp" />
+
+                        <ImageView
+                            android:id="@+id/member_card"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="3dp"
+                            android:layout_weight="0.5"
+                            android:src="@drawable/ic_baseline_card_membership_24" />
+
+                    </TableRow>
+
+                </TableLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycleView"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp" />
+
+                    <com.kitezeng.shopping.BannerIndicator
+                        android:id="@+id/indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:layout_alignBottom="@+id/recycleView"
+                        app:radius="3dp"
+                        app:selectColor="@color/colorAccent"
+                        app:space="10dp"
+                        app:unselectedColor="#ffffff" />
+
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/pictureRecycleView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="100dp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+    </LinearLayout>
+
+
+</FrameLayout>

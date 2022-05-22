@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<group android:checkableBehavior="single">
+
+    <item
+        android:id="@+id/add"
+        android:checked="true"
+        android:title="新增商品"
+        android:icon="@drawable/ic_baseline_add_24"
+        />
+    <item
+        android:id="@+id/delete"
+        android:title="刪除商品"
+        android:icon="@drawable/ic_baseline_delete_24"
+        />
+    <item
+        android:id="@+id/update"
+        android:title="更新商品"
+        android:icon="@drawable/ic_baseline_update_24"
+        />
+
+</group>
+</menu>

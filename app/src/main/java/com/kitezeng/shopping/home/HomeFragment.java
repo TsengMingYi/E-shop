@@ -1,0 +1,4 @@
+package com.kitezeng.shopping.home;
+
+public class HomeFragment {
+}
