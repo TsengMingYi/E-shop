@@ -7,8 +7,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.kitezeng.shopping.R;
+import com.kitezeng.shopping.apiHelper.ApiHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +29,8 @@ public class FragmentDelete extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private EditText delete_edit_id;
+    private Button delete_request_btn;
 
     public FragmentDelete() {
         // Required empty public constructor
@@ -61,6 +67,31 @@ public class FragmentDelete extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_delete, container, false);
+        View view = inflater.inflate(R.layout.fragment_delete, container, false);
+        delete_edit_id = view.findViewById(R.id.delete_edit_id);
+        delete_request_btn = view.findViewById(R.id.delete_request_btn);
+
+        delete_request_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (delete_edit_id != null) {
+                    ApiHelper.deleteHttpData("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products/" + delete_edit_id.getText().toString(), new ApiHelper.Callback2() {
+                        @Override
+                        public void success() {
+                            Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void fail(Exception exception) {
+                            Toast.makeText(getContext(), "失敗", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }else{
+                    Toast.makeText(getContext(), "不可為空值", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        return view;
     }
 }

@@ -212,4 +212,125 @@ public class ApiHelper {
     }
 
 
+    public static void updateHTTPData(String urlpath, JSONObject json, Callback2 callback2) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+                try {
+                    URL url = new URL(urlpath);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+                    connection.setRequestMethod("PUT");
+                    connection.setRequestProperty("Content-Type", "application/json");
+                    connection.setRequestProperty("Accept", "application/json");
+                    OutputStreamWriter streamWriter = new OutputStreamWriter(connection.getOutputStream());
+                    streamWriter.write(json.toString());
+                    streamWriter.flush();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        InputStreamReader streamReader = new InputStreamReader(connection.getInputStream());
+                        BufferedReader bufferedReader = new BufferedReader(streamReader);
+                        String response = null;
+                        while ((response = bufferedReader.readLine()) != null) {
+                            stringBuilder.append(response + "\n");
+                        }
+                        bufferedReader.close();
+
+                        Log.d("test", stringBuilder.toString());
+//                return stringBuilder.toString();
+                    } else {
+                        Log.e("test", connection.getResponseMessage());
+//                return null;
+                    }
+                    if (callback2 != null) {
+                        if (mainThreadHandler == null) {
+                            mainThreadHandler = new Handler(Looper.getMainLooper());
+                        }
+                        mainThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback2.success();
+//                                Log.e("response", response.toString());
+                            }
+                        });
+                    }
+                } catch (Exception exception) {
+                    Log.e("test", exception.toString());
+
+                    if (callback2 != null) {
+                        if (mainThreadHandler == null) {
+                            mainThreadHandler = new Handler(Looper.getMainLooper());
+                        }
+                        mainThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback2.fail(exception);
+                            }
+                        });
+                    }
+//            return null;
+                } finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        }).start();
+
+
+    }
+
+    public static void deleteHttpData(String urlpath , Callback2 callback2){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                URL url = null;
+                try {
+                    url = new URL(urlpath);
+                } catch (MalformedURLException exception) {
+                    exception.printStackTrace();
+                }
+                HttpURLConnection httpURLConnection = null;
+                try {
+                    httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestProperty("Content-Type",
+                            "application/x-www-form-urlencoded");
+                    httpURLConnection.setRequestMethod("DELETE");
+                    if (callback2 != null) {
+                        if (mainThreadHandler == null) {
+                            mainThreadHandler = new Handler(Looper.getMainLooper());
+                        }
+                        mainThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback2.success();
+//                                Log.e("response", response.toString());
+                            }
+                        });
+                    }
+                    System.out.println(httpURLConnection.getResponseCode());
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                    if (callback2 != null) {
+                        if (mainThreadHandler == null) {
+                            mainThreadHandler = new Handler(Looper.getMainLooper());
+                        }
+                        mainThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback2.fail(exception);
+                            }
+                        });
+                    }
+                } finally {
+                    if (httpURLConnection != null) {
+                        httpURLConnection.disconnect();
+                    }
+                }
+            }
+        }).start();
+    }
+
 }

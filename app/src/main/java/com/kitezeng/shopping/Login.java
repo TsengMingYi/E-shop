@@ -27,18 +27,18 @@ public class Login extends AppCompatActivity {
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                     String member = edit_member.getText().toString();
                     String password = edit_member_password.getText().toString();
                     Log.e("member:",member);
                     Log.e("password:",password);
-                    if(member != null && password != null){
+                    if(edit_member != null && edit_member_password != null && member != null && password != null){
                         if(member.equals("kitezeng") && password.equals("123456zx")){
                             startActivity(new Intent(Login.this, ShoppingMaster.class));
                         }
                     }else {
-                    Toast.makeText(Login.this, "不可為空值", Toast.LENGTH_LONG).show();
-                }
+                        Toast.makeText(Login.this, "不可為空值", Toast.LENGTH_LONG).show();
+                    }
+
             }
         });
 

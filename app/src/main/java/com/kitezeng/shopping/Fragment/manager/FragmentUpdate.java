@@ -7,8 +7,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.kitezeng.shopping.R;
+import com.kitezeng.shopping.apiHelper.ApiHelper;
+
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +31,13 @@ public class FragmentUpdate extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private EditText update_edit_id;
+    private EditText update_edit_name;
+    private EditText update_edit_category;
+    private EditText update_edit_imageUrl;
+    private EditText update_edit_price;
+    private EditText update_edit_stock;
+    private Button update_request_btn;
 
     public FragmentUpdate() {
         // Required empty public constructor
@@ -61,6 +74,48 @@ public class FragmentUpdate extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_update, container, false);
+        View view = inflater.inflate(R.layout.fragment_update, container, false);
+        update_edit_name = view.findViewById(R.id.update_edit_name);
+        update_edit_id = view.findViewById(R.id.update_edit_id);
+        update_edit_category = view.findViewById(R.id.update_edit_category);
+        update_edit_imageUrl = view.findViewById(R.id.update_edit_imageUrl);
+        update_edit_price = view.findViewById(R.id.update_edit_price);
+        update_edit_stock = view.findViewById(R.id.update_edit_stock);
+        update_request_btn = view.findViewById(R.id.update_request_btn);
+
+        update_request_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(update_edit_name!=null && update_edit_category !=null &&
+                        update_edit_imageUrl !=null && update_edit_price !=null
+                        && update_edit_stock !=null){
+                    JSONObject jsonObject = new JSONObject();
+                    try{
+                        jsonObject.put("productName",update_edit_name.getText().toString());
+                        jsonObject.put("productId",update_edit_id.getText().toString());
+                        jsonObject.put("category",update_edit_category.getText().toString());
+                        jsonObject.put("imageUrl",update_edit_imageUrl.getText().toString());
+                        jsonObject.put("price",update_edit_price.getText().toString());
+                        jsonObject.put("stock",update_edit_stock.getText().toString());
+                        ApiHelper.updateHTTPData("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products/"+update_edit_id.getText().toString(), jsonObject, new ApiHelper.Callback2() {
+                            @Override
+                            public void success() {
+                                Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void fail(Exception exception) {
+                                Toast.makeText(getContext(), "失敗", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(getContext(), "不可為空值", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        return view;
     }
 }

@@ -3,12 +3,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".Fragment.manager.FragmentUpdate">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
+
+
+        <EditText
+            android:id="@+id/update_edit_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="產品編號" />
+
+        <EditText
+            android:id="@+id/update_edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="產品名稱" />
+
+        <EditText
+            android:id="@+id/update_edit_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="產品類別" />
+
+        <EditText
+            android:id="@+id/update_edit_imageUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="產品圖片網址" />
+
+        <EditText
+            android:id="@+id/update_edit_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="產品價格" />
+
+        <EditText
+            android:id="@+id/update_edit_stock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="產品數量" />
+
+        <Button
+            android:id="@+id/update_request_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="確認" />
+
+    </LinearLayout>
 
 </FrameLayout>

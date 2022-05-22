@@ -33,6 +33,7 @@ public class FragmentFavorite extends Fragment {
     private String mParam2;
     private TextView textView2;
 
+
     public FragmentFavorite() {
         // Required empty public constructor
     }

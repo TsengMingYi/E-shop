@@ -99,13 +99,6 @@ public class FragmentAdd extends Fragment {
                         edit_imageUrl !=null && edit_price !=null
                         && edit_stock !=null){
 
-//                    Product product = new Product();
-//                    product.setProductName(edit_name.getText().toString());
-//                    product.setCategory(edit_category.getText().toString());
-//                    product.setImageUrl(edit_imageUrl.getText().toString());
-//                    product.setPrice(Integer.parseInt(edit_price.getText().toString()));
-//                    product.setStock(Integer.parseInt(edit_stock.getText().toString()));
-//                    ObjectMapper objectMapper = new ObjectMapper();
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put("productName",edit_name.getText().toString());
@@ -116,7 +109,7 @@ public class FragmentAdd extends Fragment {
                         ApiHelper.sendHTTPData("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", jsonObject, new ApiHelper.Callback2() {
                             @Override
                             public void success() {
-                                Toast.makeText(getContext(), "成功", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
                             }
 
                             @Override
@@ -127,9 +120,6 @@ public class FragmentAdd extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
-
                 }else{
                     Toast.makeText(getContext(), "不可為空值", Toast.LENGTH_LONG).show();
                 }
