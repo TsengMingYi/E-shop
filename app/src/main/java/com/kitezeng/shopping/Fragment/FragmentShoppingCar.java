@@ -3,6 +3,8 @@ package com.kitezeng.shopping.Fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.kitezeng.shopping.ListViewModel;
 import com.kitezeng.shopping.R;
 
 /**
@@ -28,6 +33,8 @@ public class FragmentShoppingCar extends Fragment {
     private String mParam1;
     private String mParam2;
     private TextView textView1;
+    private FirebaseUser user;
+    private FirebaseAuth mAuth;
 
     public FragmentShoppingCar() {
         // Required empty public constructor
@@ -58,6 +65,7 @@ public class FragmentShoppingCar extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -67,8 +75,33 @@ public class FragmentShoppingCar extends Fragment {
         Log.e("testShopping","testShopping");
 
         View view = inflater.inflate(R.layout.fragment_shopping_car, container, false);
-        textView1 = view.findViewById(R.id.textView1);
-        textView1.setText("這是購物車");
+        textView1 = view.findViewById(R.id.textView_shopping_car);
+
+        if(mAuth.getCurrentUser() == null){
+            textView1.setText("這是購物車");
+        }else{
+            user = mAuth.getCurrentUser();
+            textView1.setText(user.getEmail());
+        }
+
+
+        ListViewModel model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+        model.getUserMutableLiveData().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
+            @Override
+            public void onChanged(FirebaseUser firebaseUser) {
+                Log.e("ShoppingCarData",firebaseUser.getEmail());
+                textView1.setText(firebaseUser.getEmail());
+            }
+        });
+        model.getIsTrue().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean){
+                    textView1.setText("這是購物車");
+                }
+            }
+        });
+
         return view;
     }
 }

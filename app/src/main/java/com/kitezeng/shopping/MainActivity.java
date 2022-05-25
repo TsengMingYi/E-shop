@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.kitezeng.shopping.Adapter.MainPagerAdapter;
 import com.kitezeng.shopping.Fragment.FragmentHome;
 
@@ -30,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         findView();
 
         MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(),getLifecycle());
@@ -79,4 +79,10 @@ public class MainActivity extends AppCompatActivity {
         viewPager2 = findViewById(R.id.viewPager2);
         bottomNavigationView = findViewById(R.id.navigation);
     }
+
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        FirebaseAuth.getInstance().signOut();
+//    }
 }

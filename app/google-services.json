@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "292540070583",
+    "project_id": "e-shop-7be0b",
+    "storage_bucket": "e-shop-7be0b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292540070583:android:b213b280060b7d9b5feb32",
+        "android_client_info": {
+          "package_name": "com.kitezeng.shopping"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "292540070583-qvuce9atkqd1u77m2o211tffj4h2m20k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuwICohM3QSBDPoCo2A7_NTinO3D_LiEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "292540070583-qvuce9atkqd1u77m2o211tffj4h2m20k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
