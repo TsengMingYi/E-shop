@@ -1,10 +1,17 @@
 package com.kitezeng.shopping.Fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -17,9 +24,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.kitezeng.shopping.Adapter.PageAdapter;
 import com.kitezeng.shopping.BannerIndicator;
 import com.kitezeng.shopping.Callback3;
+import com.kitezeng.shopping.ListViewModel;
 import com.kitezeng.shopping.Login;
 import com.kitezeng.shopping.Manager.HomeManager;
 import com.kitezeng.shopping.Model.Page;
@@ -53,16 +63,20 @@ public class FragmentHome extends Fragment {
     private BannerIndicator bannerIndicator;
     private SwipeRefreshLayout swipe_refresh;
     private ImageView member_card;
+    private FirebaseUser user;
     private EditText edit_search;
-//    private String apiUrl = host + limit + offset;
+    //    private String apiUrl = host + limit + offset;
     private View backTop;
     private ArrayList<Product> productArrayList = new ArrayList<>();
     private ArrayList<Product> productArrayListTotal = new ArrayList<>();
     private Page<Product> productPage = new Page<>();
     private PageAdapter pageAdapter;
     private int count = 5;
+    private ListViewModel model;
     private Handler handler = new Handler();
     private NestedScrollView nestedScrollView;
+    private ActivityResultLauncher<Intent> launcher;
+    private FirebaseAuth mAuth;
 
     /**
      * Use this factory method to create a new instance of
@@ -93,6 +107,7 @@ public class FragmentHome extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -112,15 +127,61 @@ public class FragmentHome extends Fragment {
         nestedScrollView = view.findViewById(R.id.nested_scrollview);
         member_card = view.findViewById(R.id.member_card);
         swipe_refresh = view.findViewById(R.id.swipe_refresh);
+        model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
 
+        if (mAuth.getCurrentUser() != null) {
+            user = mAuth.getCurrentUser();
+//            model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+            model.setUserMutableLiveData(user);
+            member_card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getContext(), user.getEmail() + "已經登入", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            set_member_card();
+        }
+
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    user = result.getData().getParcelableExtra("data");
+                    Toast.makeText(getContext(), user.getEmail() + "已經登入", Toast.LENGTH_LONG).show();
+//                    model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+                    model.setUserMutableLiveData(user);
+                }
+            }
+        });
+
+//        model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+        model.getUserMutableLiveData().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
+            @Override
+            public void onChanged(FirebaseUser user) {
+                member_card.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getContext(), user.getEmail()+"已經登入", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        model.getIsTrue().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean){
+                    set_member_card();
+                }
+            }
+        });
 
         HomeManager.getInstance().homeView(list, getContext(), recyclerView, bannerIndicator);
 
         setEdit_search();
 
         setNestedScrollViewToTop();
-
-        set_member_card();
 
 
         pageAdapter = new PageAdapter(productArrayList);
@@ -143,7 +204,7 @@ public class FragmentHome extends Fragment {
                 Log.e("length3", productArrayList.size() + "");
                 if (productArrayList.size() == count) {
                     pageAdapter.setLoadState(pageAdapter.LOADING);
-                    HomeManager.getInstance().syncDataFromRemote("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products?limit=5&offset="+count, new Runnable() {
+                    HomeManager.getInstance().syncDataFromRemote("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products?limit=5&offset=" + count, new Runnable() {
                         @Override
                         public void run() {
                             ArrayList<Product> productArrayList1 = HomeManager.getInstance().getProductArrayList();
@@ -156,12 +217,11 @@ public class FragmentHome extends Fragment {
 
                             pageAdapter.refreshUI(productArrayList);
                             pageAdapter.setLoadState(pageAdapter.LOADING_COMPLETE);
-                            count+=5;
+                            count += 5;
 
                         }
                     });
-                }
-                else {
+                } else {
                     // 显示加载到底的提示
                     pageAdapter.setLoadState(pageAdapter.LOADING_END);
                 }
@@ -193,45 +253,46 @@ public class FragmentHome extends Fragment {
         });
     }
 
-    private void set_member_card(){
+    private void set_member_card() {
         member_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(FragmentHome.this.getActivity(), Login.class));
+                Intent intent = new Intent(FragmentHome.this.getActivity(), Login.class);
+                launcher.launch(intent);
             }
         });
     }
 
-    private void updateDataBySwipe(){
+    private void updateDataBySwipe() {
         swipe_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 swipe_refresh.setRefreshing(true);
                 pageAdapter.clearUI();
-                    count = 5;
-                    HomeManager.getInstance().syncDataFromRemote1("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", new Callback3() {
-                        @Override
-                        public void success() {
-                            productArrayList = HomeManager.getInstance().getProductArrayList();
-                            productArrayListTotal.addAll(productArrayList);
-                            pageAdapter.refreshUI(productArrayList);
-                            productPage = HomeManager.getInstance().getProductPage();
-                            Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
-                            swipe_refresh.setRefreshing(false);
-                        }
+                count = 5;
+                HomeManager.getInstance().syncDataFromRemote1("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", new Callback3() {
+                    @Override
+                    public void success() {
+                        productArrayList = HomeManager.getInstance().getProductArrayList();
+                        productArrayListTotal.addAll(productArrayList);
+                        pageAdapter.refreshUI(productArrayList);
+                        productPage = HomeManager.getInstance().getProductPage();
+                        Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                        swipe_refresh.setRefreshing(false);
+                    }
 
-                        @Override
-                        public void fail(Exception e) {
-                            swipe_refresh.setRefreshing(true);
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getContext(), "請檢查網路連線", Toast.LENGTH_LONG).show();
-                                }
-                            },4000);
-                        }
-                    });
+                    @Override
+                    public void fail(Exception e) {
+                        swipe_refresh.setRefreshing(true);
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(), "請檢查網路連線", Toast.LENGTH_LONG).show();
+                            }
+                        }, 4000);
+                    }
+                });
 
                 swipe_refresh.setRefreshing(false);
             }
@@ -241,7 +302,6 @@ public class FragmentHome extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
 
 
     }

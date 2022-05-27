@@ -89,10 +89,12 @@ public class FragmentShoppingCar extends Fragment {
         model.getUserMutableLiveData().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
-                Log.e("ShoppingCarData",firebaseUser.getEmail());
-                textView1.setText(firebaseUser.getEmail());
+
+                    textView1.setText(firebaseUser.getEmail());
+//                Log.e("ShoppingCarData",firebaseUser.getEmail());
             }
         });
+
         model.getIsTrue().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {

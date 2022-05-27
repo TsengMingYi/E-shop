@@ -6,6 +6,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.kitezeng.shopping.Adapter.ManagerAdapter;
@@ -14,6 +16,7 @@ public class ShoppingMaster extends AppCompatActivity {
 
     private ViewPager2 viewPager_manager;
     private NavigationView navigation_manager;
+//    private ImageView back_image3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,13 @@ public class ShoppingMaster extends AppCompatActivity {
         viewPager_manager.setAdapter(managerAdapter);
         viewPager_manager.setOffscreenPageLimit(3);
         viewPager_manager.setUserInputEnabled(false);
+
+//        back_image3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                finish();
+//            }
+//        });
 
         navigation_manager.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -58,5 +68,6 @@ public class ShoppingMaster extends AppCompatActivity {
     private void findView(){
         viewPager_manager = findViewById(R.id.viewPager_manager);
         navigation_manager = findViewById(R.id.navigation_manager);
+//        back_image3 = findViewById(R.id.back_image3);
     }
 }
