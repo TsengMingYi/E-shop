@@ -144,6 +144,22 @@ public class FragmentMemberCentre extends Fragment {
                 isButtonNull.setPadding(10, 10, 10, 10);
                 linearLayout.addView(isButtonNull);
 
+                if(user.getEmail().contains("www.mingerzeng@gmail.com")){
+                    masterButton = new Button(getContext());
+                    masterButton.setText("管理商品");
+                    LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params1.setMargins(0, 20, 0, 0);
+                    masterButton.setLayoutParams(params);
+                    masterButton.setPadding(10, 10, 10, 10);
+                    linearLayout.addView(masterButton);
+                    masterButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(new Intent(FragmentMemberCentre.this.getActivity() , ShoppingMaster.class));
+                        }
+                    });
+                }
+
                 isButtonNull.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

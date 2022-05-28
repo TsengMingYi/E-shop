@@ -81,7 +81,7 @@ public class FragmentShoppingCar extends Fragment {
             textView1.setText("這是購物車");
         }else{
             user = mAuth.getCurrentUser();
-            textView1.setText(user.getEmail());
+            textView1.setText(user.getEmail()+" 成功登入");
         }
 
 
@@ -90,7 +90,7 @@ public class FragmentShoppingCar extends Fragment {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
 
-                    textView1.setText(firebaseUser.getEmail());
+                    textView1.setText(firebaseUser.getEmail()+" 成功登入");
 //                Log.e("ShoppingCarData",firebaseUser.getEmail());
             }
         });
