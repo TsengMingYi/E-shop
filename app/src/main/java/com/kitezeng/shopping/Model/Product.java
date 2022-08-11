@@ -1,10 +1,12 @@
 package com.kitezeng.shopping.Model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Product {
+public class Product implements Serializable {
 
     private Integer productId;
+    private Integer userId;
     private String productName;
     private String category;
     private String imageUrl;
@@ -13,6 +15,14 @@ public class Product {
     private String description;
     private String createDate;
     private String lastModifiedDate;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public Integer getProductId() {
         return productId;

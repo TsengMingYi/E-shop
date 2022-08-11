@@ -23,11 +23,16 @@
             android:layout_height="wrap_content"
             android:hint="產品類別" />
 
-        <EditText
-            android:id="@+id/edit_imageUrl"
+        <ImageView
+            android:id="@+id/imageView_pic"
+            android:layout_width="match_parent"
+            android:layout_height="156dp"/>
+
+        <Button
+            android:id="@+id/button_selectpic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="產品圖片網址" />
+            android:hint="選擇圖片" />
 
         <EditText
             android:id="@+id/edit_price"

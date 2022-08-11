@@ -1,5 +1,9 @@
 package com.kitezeng.shopping.Adapter;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,12 +12,20 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.kitezeng.shopping.Fragment.FragmentHome;
+import com.kitezeng.shopping.Manager.OrderManager;
+import com.kitezeng.shopping.Model.OrderItem;
 import com.kitezeng.shopping.Model.Product;
+import com.kitezeng.shopping.ProductDetail;
 import com.kitezeng.shopping.R;
 
 import java.util.ArrayList;
@@ -22,6 +34,8 @@ public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
 
     private ArrayList<Product> productArrayList;
+    private ActivityResultLauncher<Intent> launcher;
+    private FragmentHome fragment;
 
 
     // 普通布局
@@ -37,8 +51,9 @@ public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     // 加载到底
     public final int LOADING_END = 3;
 
-    public PageAdapter(ArrayList<Product> productArrayList) {
+    public PageAdapter(ArrayList<Product> productArrayList, FragmentHome fragment) {
         this.productArrayList = productArrayList;
+        this.fragment = fragment;
     }
 
     @Override
@@ -74,6 +89,15 @@ public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             ViewHolder viewHolder = (ViewHolder) holder;
             viewHolder.productName.setText(product.getProductName());
             Glide.with(viewHolder.itemView.getContext()).load(product.getImageUrl()).centerCrop().into(viewHolder.productPicture);
+
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), ProductDetail.class);
+                    intent.putExtra("product_detail",product);
+                    fragment.hello(intent);
+                }
+            });
 
         } else if (holder instanceof FootViewHolder) {
             FootViewHolder footViewHolder = (FootViewHolder) holder;
@@ -158,6 +182,13 @@ public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     public void refreshUI(ArrayList<Product> products){
         this.productArrayList = products;
         notifyDataSetChanged();
+    }
+    public void setLan(ActivityResultLauncher<Intent> launcher){
+        this.launcher = launcher;
+    }
+
+    public ActivityResultLauncher<Intent> getLan(){
+        return launcher;
     }
 
     public void clearUI(){

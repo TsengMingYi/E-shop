@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.kitezeng.shopping.Manager.UserManager;
+import com.kitezeng.shopping.Model.User;
+import com.kitezeng.shopping.apiHelper.ApiHelper;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
 
@@ -76,26 +83,53 @@ public class Login extends AppCompatActivity {
         });
     }
     private void login(String email , String password){
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("email",email);
+            jsonObject.put("password",password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ApiHelper.sendHTTPData("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/users/login", jsonObject, 200,new ApiHelper.Callback5() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    if(user.getEmail().contains("www.mingerzeng@gmail.com")){
+            public void success(String rawString) {
+                User user = UserManager.getInstance().loadUserDataFromRawData(rawString);
+                if(user.getEmail().contains("www.mingerzeng@gmail.com")){
                         startActivity(new Intent(Login.this,ShoppingMaster.class));
                     }
+                Log.e("user",user+"");
                     Intent intent = new Intent();
-                    intent.putExtra("data",user);
+                    intent.putExtra("data", user);
                     setResult(RESULT_OK,intent);
                     finish();
                     Toast.makeText(Login.this, "登入成功", Toast.LENGTH_LONG).show();
+            }
 
-                }else{
-                    Toast.makeText(Login.this, "登入失敗", Toast.LENGTH_LONG).show();
-                }
+            @Override
+            public void fail(Exception exception) {
+                Toast.makeText(Login.this, "登入失敗", Toast.LENGTH_SHORT).show();
             }
         });
+//        mAuth = FirebaseAuth.getInstance();
+//        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(@NonNull Task<AuthResult> task) {
+//                if(task.isSuccessful()){
+//                    FirebaseUser user = mAuth.getCurrentUser();
+//                    if(user.getEmail().contains("www.mingerzeng@gmail.com")){
+//                        startActivity(new Intent(Login.this,ShoppingMaster.class));
+//                    }
+//                    Intent intent = new Intent();
+//                    intent.putExtra("data",user);
+//                    setResult(RESULT_OK,intent);
+//                    finish();
+//                    Toast.makeText(Login.this, "登入成功", Toast.LENGTH_LONG).show();
+//
+//                }else{
+//                    Toast.makeText(Login.this, "登入失敗", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
     }
 
 }

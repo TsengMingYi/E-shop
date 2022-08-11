@@ -146,7 +146,6 @@ public class HomeManager {
         Log.e("response",rawData);
 //        productArrayList.clear();
         try{
-
             productArrayList = new ArrayList<>();
             productPage = new Page<>();
             JSONObject jsonObject = new JSONObject(rawData);

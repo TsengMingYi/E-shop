@@ -3,6 +3,7 @@
     package="com.kitezeng.shopping">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
@@ -14,18 +15,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Shopping">
         <activity
+            android:name=".ProductDetail"
+            android:exported="false" />
+        <activity
             android:name=".Register"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ShoppingMaster"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Login"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Search"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity2"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ShoppingMaster"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Login"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Search"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,6 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

@@ -26,17 +26,26 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.kitezeng.shopping.Adapter.OrderAdapter;
 import com.kitezeng.shopping.Adapter.PageAdapter;
 import com.kitezeng.shopping.BannerIndicator;
 import com.kitezeng.shopping.Callback3;
 import com.kitezeng.shopping.ListViewModel;
+import com.kitezeng.shopping.ListViewModelForOrder;
 import com.kitezeng.shopping.Login;
 import com.kitezeng.shopping.Manager.HomeManager;
+import com.kitezeng.shopping.Manager.OrderManager;
+import com.kitezeng.shopping.Model.Order;
+import com.kitezeng.shopping.Model.OrderItem;
 import com.kitezeng.shopping.Model.Page;
 import com.kitezeng.shopping.Model.Product;
+import com.kitezeng.shopping.Model.User;
 import com.kitezeng.shopping.R;
 import com.kitezeng.shopping.Search;
+import com.kitezeng.shopping.apiHelper.ApiHelper;
 import com.kitezeng.shopping.util.EndlessRecyclerOnScrollListener;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,19 +72,24 @@ public class FragmentHome extends Fragment {
     private BannerIndicator bannerIndicator;
     private SwipeRefreshLayout swipe_refresh;
     private ImageView member_card;
-    private FirebaseUser user;
+    private User user;
     private EditText edit_search;
     //    private String apiUrl = host + limit + offset;
     private View backTop;
     private ArrayList<Product> productArrayList = new ArrayList<>();
     private ArrayList<Product> productArrayListTotal = new ArrayList<>();
     private Page<Product> productPage = new Page<>();
+    private int userId;
     private PageAdapter pageAdapter;
+    private OrderAdapter orderAdapter = new OrderAdapter();
     private int count = 5;
+    private int count1 = 5;
     private ListViewModel model;
+    private ListViewModelForOrder modelForOrder;
     private Handler handler = new Handler();
     private NestedScrollView nestedScrollView;
     private ActivityResultLauncher<Intent> launcher;
+    private ActivityResultLauncher<Intent> launcher1;
     private FirebaseAuth mAuth;
 
     /**
@@ -108,6 +122,7 @@ public class FragmentHome extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mAuth = FirebaseAuth.getInstance();
+
     }
 
     @Override
@@ -128,9 +143,10 @@ public class FragmentHome extends Fragment {
         member_card = view.findViewById(R.id.member_card);
         swipe_refresh = view.findViewById(R.id.swipe_refresh);
         model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+        modelForOrder = new ViewModelProvider(requireActivity()).get(ListViewModelForOrder.class);
 
-        if (mAuth.getCurrentUser() != null) {
-            user = mAuth.getCurrentUser();
+        if (user != null) {
+//            user = mAuth.getCurrentUser();
 //            model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
             model.setUserMutableLiveData(user);
             member_card.setOnClickListener(new View.OnClickListener() {
@@ -147,22 +163,154 @@ public class FragmentHome extends Fragment {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getResultCode() == Activity.RESULT_OK) {
-                    user = result.getData().getParcelableExtra("data");
-                    Toast.makeText(getContext(), user.getEmail() + "已經登入", Toast.LENGTH_LONG).show();
+                    user = (User) result.getData().getSerializableExtra("data");
+                    Toast.makeText(getContext(), "登入成功", Toast.LENGTH_LONG).show();
 //                    model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
                     model.setUserMutableLiveData(user);
+                    userId = user.getUserId();
+                    count = 5;
+                    swipe_refresh.setRefreshing(true);
+                    pageAdapter.clearUI();
+                    HomeManager.getInstance().syncDataFromRemote1("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", new Callback3() {
+                        @Override
+                        public void success() {
+                            productArrayList = HomeManager.getInstance().getProductArrayList();
+                            for (int i = 0; i < productArrayList.size(); i++) {
+                                productArrayList.get(i).setUserId(userId);
+                            }
+                            productArrayListTotal.addAll(productArrayList);
+                            pageAdapter.refreshUI(productArrayList);
+                            productPage = HomeManager.getInstance().getProductPage();
+                            Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                            swipe_refresh.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void fail(Exception e) {
+                            swipe_refresh.setRefreshing(true);
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getContext(), "請檢查網路連線", Toast.LENGTH_LONG).show();
+                                }
+                            }, 4000);
+                        }
+                    });
+
+                    swipe_refresh.setRefreshing(false);
+
+
+//                    model.getUserMutableLiveData().observe(getViewLifecycleOwner(), new Observer<User>() {
+//                        @Override
+//                        public void onChanged(User user) {
+//                            member_card.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    Toast.makeText(getContext(), user.getEmail()+"已經登入", Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+//                        }
+//                    });
                 }
             }
         });
 
-//        model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
-        model.getUserMutableLiveData().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
+
+        launcher1 = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
-            public void onChanged(FirebaseUser user) {
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_FIRST_USER) {
+                    Log.e("userIdNew", userId + "");
+                    OrderManager.getInstance().syncDataFromRemote("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/users/" + userId + "/orders", new Runnable() {
+                        @Override
+                        public void run() {
+//                        Order order = OrderManager.getInstance().getOrder();
+                            ArrayList<OrderItem> orderItems = OrderManager.getInstance().getOrderItems();
+                            Order order = OrderManager.getInstance().getOrder();
+                            for(int i = 0;i<order.getOrderItemList().size();i++){
+                                order.getOrderItemList().get(i).setUserId(userId);
+                            }
+                            modelForOrder.setOrderMutableLiveData(order);
+                        }
+                    });
+                    count = 5;
+                    swipe_refresh.setRefreshing(true);
+                    pageAdapter.clearUI();
+                    HomeManager.getInstance().syncDataFromRemote1("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", new Callback3() {
+                        @Override
+                        public void success() {
+                            productArrayList = HomeManager.getInstance().getProductArrayList();
+                            for (int i = 0; i < productArrayList.size(); i++) {
+                                productArrayList.get(i).setUserId(userId);
+                            }
+                            productArrayListTotal.addAll(productArrayList);
+                            pageAdapter.refreshUI(productArrayList);
+                            productPage = HomeManager.getInstance().getProductPage();
+                            Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                            swipe_refresh.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void fail(Exception e) {
+                            swipe_refresh.setRefreshing(true);
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getContext(), "請檢查網路連線", Toast.LENGTH_LONG).show();
+                                }
+                            }, 4000);
+                        }
+                    });
+
+                    swipe_refresh.setRefreshing(false);
+                }
+
+            }
+        });
+
+        model = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+        model.getUserMutableLiveData().observe(getViewLifecycleOwner(), new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                userId = user.getUserId();
+                count = 5;
+                swipe_refresh.setRefreshing(true);
+                pageAdapter.clearUI();
+                HomeManager.getInstance().syncDataFromRemote1("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", new Callback3() {
+                    @Override
+                    public void success() {
+                        productArrayList = HomeManager.getInstance().getProductArrayList();
+                        for (int i = 0; i < productArrayList.size(); i++) {
+                            productArrayList.get(i).setUserId(userId);
+                        }
+                        productArrayListTotal.addAll(productArrayList);
+                        pageAdapter.refreshUI(productArrayList);
+                        productPage = HomeManager.getInstance().getProductPage();
+                        Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                        swipe_refresh.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void fail(Exception e) {
+                        swipe_refresh.setRefreshing(true);
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(), "請檢查網路連線", Toast.LENGTH_LONG).show();
+                            }
+                        }, 4000);
+                    }
+                });
+
+                swipe_refresh.setRefreshing(false);
+
                 member_card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getContext(), user.getEmail()+"已經登入", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), user.getUserId() + "已經登入", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -171,11 +319,62 @@ public class FragmentHome extends Fragment {
         model.getIsTrue().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                if(!aBoolean){
+                if (!aBoolean) {
                     set_member_card();
+                    userId = 0;
+                    count = 5;
+                    swipe_refresh.setRefreshing(true);
+                    pageAdapter.clearUI();
+                    HomeManager.getInstance().syncDataFromRemote1("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/products", new Callback3() {
+                        @Override
+                        public void success() {
+                            productArrayList = HomeManager.getInstance().getProductArrayList();
+                            for (int i = 0; i < productArrayList.size(); i++) {
+                                productArrayList.get(i).setUserId(userId);
+                            }
+                            productArrayListTotal.addAll(productArrayList);
+                            pageAdapter.refreshUI(productArrayList);
+                            productPage = HomeManager.getInstance().getProductPage();
+                            Toast.makeText(getContext(), "成功", Toast.LENGTH_LONG).show();
+                            swipe_refresh.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void fail(Exception e) {
+                            swipe_refresh.setRefreshing(true);
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getContext(), "請檢查網路連線", Toast.LENGTH_LONG).show();
+                                }
+                            }, 4000);
+                        }
+                    });
+
+                    swipe_refresh.setRefreshing(false);
                 }
             }
         });
+
+//        launcher1 = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+//            @Override
+//            public void onActivityResult(ActivityResult result) {
+//                if (result.getResultCode() == Activity.RESULT_FIRST_USER) {
+//                    Log.e("userIdNew",userId+"");
+//                    OrderManager.getInstance().syncDataFromRemote("http://springbootmall-env.eba-weyjyptf.us-east-1.elasticbeanstalk.com/users/"+userId+"/orders", new Runnable() {
+//                        @Override
+//                        public void run() {
+////                        Order order = OrderManager.getInstance().getOrder();
+//                            ArrayList<OrderItem> orderItems = OrderManager.getInstance().getOrderItems();
+//                            pageAdapter.setLan(launcher1);
+//                            modelForOrder.setOrderMutableLiveData(orderItems);
+//
+//                        }
+//                    });
+//                }
+//            }
+//        });
 
         HomeManager.getInstance().homeView(list, getContext(), recyclerView, bannerIndicator);
 
@@ -184,7 +383,7 @@ public class FragmentHome extends Fragment {
         setNestedScrollViewToTop();
 
 
-        pageAdapter = new PageAdapter(productArrayList);
+        pageAdapter = new PageAdapter(productArrayList, FragmentHome.this);
         HomeManager.getInstance().pictureView(pictureRecycleView, getContext(), pageAdapter);
         pictureRecycleView.setAdapter(pageAdapter);
 
@@ -192,6 +391,9 @@ public class FragmentHome extends Fragment {
             @Override
             public void run() {
                 productArrayList = HomeManager.getInstance().getProductArrayList();
+                for (int i = 0; i < productArrayList.size(); i++) {
+                    productArrayList.get(i).setUserId(userId);
+                }
                 productArrayListTotal.addAll(productArrayList);
                 pageAdapter.refreshUI(productArrayList);
                 productPage = HomeManager.getInstance().getProductPage();
@@ -208,7 +410,9 @@ public class FragmentHome extends Fragment {
                         @Override
                         public void run() {
                             ArrayList<Product> productArrayList1 = HomeManager.getInstance().getProductArrayList();
-
+                            for (int i = 0; i < productArrayList1.size(); i++) {
+                                productArrayList1.get(i).setUserId(userId);
+                            }
                             productArrayList.addAll(productArrayList1);
                             productArrayListTotal.addAll(productArrayList1);
 
@@ -274,6 +478,9 @@ public class FragmentHome extends Fragment {
                     @Override
                     public void success() {
                         productArrayList = HomeManager.getInstance().getProductArrayList();
+                        for (int i = 0; i < productArrayList.size(); i++) {
+                            productArrayList.get(i).setUserId(userId);
+                        }
                         productArrayListTotal.addAll(productArrayList);
                         pageAdapter.refreshUI(productArrayList);
                         productPage = HomeManager.getInstance().getProductPage();
@@ -297,6 +504,10 @@ public class FragmentHome extends Fragment {
                 swipe_refresh.setRefreshing(false);
             }
         });
+    }
+
+    public void hello(Intent intent) {
+        launcher1.launch(intent);
     }
 
     @Override

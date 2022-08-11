@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Fragment.FragmentShoppingCar">
 
     <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp">
+        android:layout_height="0dp"
+        android:layout_weight="15"
+        android:orientation="vertical">
 
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/textView_shopping_car"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="150dp"
+            android:textSize="30dp" />
 
-            <TextView
-                android:id="@+id/textView_shopping_car"
-                android:layout_width="match_parent"
-                android:textSize="30dp"
-                android:layout_height="150dp"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/order_recycleView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
-        </LinearLayout>
+    <TextView
+        android:id="@+id/total_amount"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
 
-    </ScrollView>
+    </TextView>
 
-</FrameLayout>
+</LinearLayout>

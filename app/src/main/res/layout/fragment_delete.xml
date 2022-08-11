@@ -17,7 +17,7 @@
             android:id="@+id/delete_edit_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="產品編號" />
+            android:hint="產品名稱" />
 
 
 
